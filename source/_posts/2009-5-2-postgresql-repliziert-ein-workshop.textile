@@ -1,0 +1,16 @@
+--- 
+layout: post
+title: "PostgreSQL repliziert: Ein Workshop"
+mt_id: 12
+date: 2009-05-02 17:40:03 +02:00
+---
+Der Workshop ist nicht so gelaufen wie ich mir's erwartet habe.
+
+Ich war noch etwas gefertigt von der halben Grippe die ich mitgenommen habe, insgesamt waren nur drei Personen dabei[1], Virtualbox hat bei <u>niemandem</u> out of the Box funktioniert (Fuck this, I'm going back to VMware) und mit dem Scoping ist's bei einer sehr kleinen, Erfahrungsmässig weit verstreuten Gruppe, auch immer extrem schwer.
+
+Damit der Rest der Welt aber auch etwas davon hat (und ich den beiden auch noch was zum durchtesten geben kann) werde ich den Praxis-Teil in ein paar Artikeln aufbereiten und hier zur Verfügung stellen.
+
+Die Slides vom Workshop gibts mal <form mt:asset-id="21" class="mt-enclosure mt-enclosure-file" style="display: inline;"><a href="http://blogs.amd.co.at/robe/2009/05/02/osdc-pgreplikation-web.pdf">hier</a></form>
+
+
+fn1. Und nach 'ner Stunde war ich mit Kristian allein, weil ein Teilnehmer seinen Zug erwischen musste und ein anderer ob des dysfunktionalen Virtualboxes lieber noch einen Talk erwischen wollte. 

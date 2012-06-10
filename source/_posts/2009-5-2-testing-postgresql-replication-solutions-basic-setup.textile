@@ -1,0 +1,79 @@
+--- 
+layout: post
+title: "Testing PostgreSQL replication solutions: Basic Setup"
+mt_id: 13
+date: 2009-05-02 18:43:00 +02:00
+---
+I want to provide an introduction, annotated examples and an easy to setup test environment for a few common and "simple" PostgreSQL replication solutions.
+
+I planned on providing images, but after what I've seen so far it seems to be much easier to just provide a HowTo ;).
+
+h2. Prerequisites 
+
+I chose Debian as test platform because I'm familiar with it and the PostgreSQL related packages are in excellent shape there.
+
+What you need is
+
+* two separate Debian Lenny instances
+* with the following packages installed:
+** postgresql postgresql-contrib postgresql-8.3-slony1 slony1-bin mercurial less libdbd-pg-perl libpoe-perl rsync psmisc ssh screen python-psycopg2 libstring-random-perl
+* which are reachable via the respective hostnames "master1" and "slave1"
+* Where both the root and the postgres user from master1 can ssh into root and postgres on slave1 
+h2. Using VirtualBox
+
+If you're using "Virtualbox":http://www.virtualbox.org/ you can use this as a rough draft:
+
+* Create master1 machine, 8GB dynamic disk, 256MB RAM, three NICs:
+** Adapter 1: NAT
+** Adapter 2: Internal Network "intnet"
+** Adapter 3: Host-Only network (optional, only needed if you don't like using VBox's console)
+* Install "Debian Lenny":http://cdimage.debian.org/debian-cd/current/i386/iso-cd/ (look for "netinst"), set hostname to master1, don't select any profiles in the tasksel screen since it's not necessary
+<pre>
+apt-get install postgresql postgresql-contrib postgresql-8.3-slony1 slony1-bin mercurial less libdbd-pg-perl libpoe-perl rsync psmisc ssh screen python-psycopg2 libstring-random-perl perl-doc
+cd /root; hg clone https://workbench.amd.co.at/hg/pgworkshop/
+ssh-keygen -q -t dsa -f ~/.ssh/id_dsa -N ""
+cp /root/.ssh/id_dsa.pub /root/.ssh/authorized_keys
+cp -a /root/.ssh /var/lib/postgresql
+chown -Rv postgres:postgres /var/lib/postgresql/.ssh/
+rm -v /etc/udev/rules.d/*-persistent-net*
+echo "10.1.0.11       slave1" >> /etc/hosts
+</pre>
+* Then configure eth1:
+<pre>
+cat << HERE >> /etc/network/interfaces
+
+auto eth1
+iface eth1 inet static
+address 10.1.0.10
+netmask 255.255.255.0
+HERE
+</pre>
+* Stop the instance and snapshot it, for good measure
+* Add a second machine named slave1, identical configuration to master1, choose the <u>same</u> disk as master1. This will cause VirtualBox to use the state of master1 as snapshot source for slave1.
+* Boot slave1, change the IP of eth1 in /etc/network/interfaces to 10.1.0.11 and change the hostname in /etc/hostname to slave1
+* Boot master1, reboot slave1
+* ssh root@slave1, ssh postgres@slave1 from master1 should work now.
+
+And you're done!
+
+h2. PostgreSQL on Debian
+
+Debian offers a few tools to manage multiple Postgres "clusters" (as in "instance").
+
+"ls -l /usr/bin/pg_*cluster" shows all available commands, we will use pg_ctlcluster regularly to start, stop, restart or reload clusters.
+
+h2. Custom tools
+
+I've written two tools to make testing replication scenarios easier. These can be found in the mercurial repository at "https://workbench.amd.co.at/hg/pgworkshop/":https://workbench.amd.co.at/hg/pgworkshop/. The tutorials assume that the repository has been checked out to "/root/pgworkshop".
+
+h3. The envorcer
+
+There is a script called "envorcer", which is basically an "environment enforcer". It prepares the PostgreSQL databases & needed configuration for the test cases.
+
+It is very destructive, so it's got a hardcoded hostname check so that it can be only run from master1.
+
+Running it without arguments shows a short usage example, the source code is pretty self-explanatory and fairly commented ;).
+
+h3. The pgexerciser
+
+The pgexerciser is in the same directory as the envorcer and is used for exercising a given PostgreSQL database. See ./pgexerciser --help for documentation.

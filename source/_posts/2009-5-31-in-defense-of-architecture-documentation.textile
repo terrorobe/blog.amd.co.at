@@ -1,0 +1,30 @@
+--- 
+layout: post
+title: In defense of architecture diagrams
+mt_id: 18
+date: 2009-05-31 22:27:20 +02:00
+---
+I just stumbled over an old architecture diagram from one of the projects I used to work on. The type of services and project in question are left as an exercise to the curious reader, since this is not the point of this posting. 
+
+What I wanted to show is, how complex multi-tiered applications can be these days, especially when you phase in new services or try to replace old ones by setting up the new services to run in parallel to the existing ones.
+
+<form mt:asset-id="22" class="mt-enclosure mt-enclosure-image" style="display: inline;"><a href="http://blogs.amd.co.at/robe/assets_c/2009/05/HighLevelArch_cropped-22.html" onclick="window.open('http://blogs.amd.co.at/robe/assets_c/2009/05/HighLevelArch_cropped-22.html','popup','width=1275,height=883,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://blogs.amd.co.at/robe/assets_c/2009/05/HighLevelArch_cropped-thumb-200x138-22.png" width="200" height="138" alt="HighLevelArch_cropped.png" class="mt-image-right" style="float: right; margin: 0 0 20px 20px;" /></a></form> 
+Imagine the following scenarios:
+
+h2. New team members
+
+A member gets added to the project. How long does it take him to understand the project from the technical side? How long would it take him if he isn't familiar with the area of business or a ["domain expert":http://en.wikipedia.org/wiki/Problem_domain_expert]? Chances are high that new project members will create drawings on their own to get a complete picture of the architecture.
+
+h2. Discussions
+
+There's a (maybe even heated) debate over a particular area of the architecture. Nobody has a complete & clear picture of the architecture, since the last discussion is a few weeks old. How long does it take to get your point across when only resorting to a flipchart? How long will it take when you can use an accurate & leigible overview as base for your discussion?
+
+h2. Operations
+
+Your ops team gets alerted because some part of your projects infrastructure misbehaves. How much time is going to be spent to get the source of the problem when there's no overview of the project, trying to figure out which symptoms are causal for the problem or just side effects
+
+h2. Summing it up
+
+Even if you don't need that kind of documentation right now, chance are high that you're going to need it very soon. And if you don't do it nice'n'thorough once, you (or other team members) will repeat the effort multiple times and throw the results away after they're done with them.
+
+So in the name of efficiency, get out the Visio (or Dia, or OmniGraffle...) and draw away!

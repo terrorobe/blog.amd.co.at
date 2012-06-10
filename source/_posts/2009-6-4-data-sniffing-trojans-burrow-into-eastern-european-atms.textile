@@ -1,0 +1,33 @@
+--- 
+layout: post
+title: Data-sniffing trojans burrow into Eastern European ATMs
+mt_id: 19
+date: 2009-06-04 19:35:44 +02:00
+---
+A catchy headline, as written by ["The Register":http://www.theregister.co.uk/2009/06/03/atm_trojans/]. To quote more from the story ("Full report":http://regmedia.co.uk/2009/06/03/trust_wave_atm_report.pdf with tech details):
+
+bq. The malware logs the magnetic-stripe data and personal identification number of cards used at an infected machine and provides an intuitive interface for retrieving the information using the ATM's receipt printer, [..] Since late 2007 or so, there have been at least 16 updates to the software, an indication that the authors are working hard to perfect their tool.
+
+p. This is a nice example of what happens, when you ignore the things that are necessary to run an important area of your core business. The business area being the operation of the ATM machines (guess how bank teller utilization would look like if you throw out all ATMs). And a few of the things to run such a part competently would be: security (of the systems, the network), ["service lifecycle management":http://en.wikipedia.org/wiki/Information_Technology_Infrastructure_Library#Overview_of_the_ITIL_v3_library] and ["configuration management":http://en.wikipedia.org/wiki/Configuration_management]. 
+To put the situation in perspective:
+
+bq. We've got a network of Windows 98/2000/XP devices, supplied by an ISV, hardly maintained, with the ISV having a proven trackrecord of "["being":http://www.sos.ca.gov/elections/voting_systems/security_analysis_of_the_diebold_accubasic_interpreter.pdf] ["challenged":http://www.blackboxvoting.org/BBVtsxstudy.pdf]" WRT IT security, running on a scarcely secured network[1] which deals with cash transactions. Is there any reason to worry?
+
+p. Yes. Deploying machines in such sensitive environments, without having a plan on how one is going to deploy updates, without having a plan on how you're going to spot tamperings, without having a plan on assessing how the security of the system looks like is blatantly incompetent. I can see the guys in charge, stating "Oh, we don't need this, it's an internal network. Nobody is going to have access there!" in meetings when the discussion touches one of the aforementioned topics. And you can bet on the "corporate culture":http://www.youtube.com/watch?v=Ug83sF_3_Ec of banks to honor such reasonings. Until it's too late.
+
+And the sad part is, that the whole system is most likely in such a bad shape that a proper approach to the situation would take at least months (or weeks, given the availability of domain experts and allowing for outages in production systems). And so they will do what they always do when faced with a problem which escapes the scopes they're fit for: fix the symptoms! There's probably a sorry lad driving around country right now, checking every ATM and deleting the trojan if it's installed. And maybe, only maybe, also fixing up the holes the crooks used to get in in the first place.
+
+The interesting part of the story is the amount of professionalism shown by the bad boys. You can rely on the powers of the market economy, the finesse and level of competence of the russian IT-crooks and an software/infrastructure ecosystem which almost screams for being abused to lead to the exact situation at hand.
+
+And I'm glad it happened. Now the companies involved will run through their ["stages of grief":http://en.wikipedia.org/wiki/Kübler-Ross_model], probably skipping a phase or two, emerging reinforced. A pretty popular case of publicly displayed corporate griefing would be the timeline of the ["Mifare Classic":http://en.wikipedia.org/wiki/MIFARE#Security_of_MIFARE_Classic] security problems. Back then it was basically "There are no security issues, filthy liars!", being followed by "I baked you an injunction, but I failed it" which finally resulted in a "Mifare Plus is an AES-based drop-in replacement for Mifare Classic and will be available later this year". 
+
+The sad part in both cases is, that it always takes an event of such gigantic proportions to get the affected companies moving and accept/adopt best practices from the industry.
+
+Proper system administration practices exists since the first "hosts" started to run batch jobs (and was much better back then, as I'm told by IT veterans). And they're even poured in ITIL these days.
+
+"Cryptanalysis":http://en.wikipedia.org/wiki/Cryptanalysis exists since mankind started to hide messages from each other and was very much professionalized in WWII, making it possible for the Allies to tilt the chances in their favor. And in the case of "Crypto-1":http://en.wikipedia.org/wiki/Crypto-1 it doesn't even take a domain expert to get suspicious. It was a sound _obfuscation_ solution back in '94, but product management should've acted on it in the last 14 years, especially because Mifare Classic started to get used heavily in electronic access control systems in Offices and governmental departments (can't say much about Police or Military, one hopes that they've got better standards there).
+
+In the end, the world will have safer & better systems. Maybe better educated vendors. All at the expense of much stress, pain, fingerpointing and shouting. And all that could've been much easier if the people in question had the room/balls/brains for actually questioning what they're doing, and if It's after all - ["Good For The Company?":http://www.flickr.com/photos/niallkennedy/67820957/]
+
+
+fn1. I had a picture of an ATM in a Bank foyer, supposedly somewhere in eastern europe, showing networking equipment and an abundance of cabling right next to it, for everyone to access. But I lost it somewhere on the internet ;).

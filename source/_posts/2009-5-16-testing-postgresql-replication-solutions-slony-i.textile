@@ -1,0 +1,362 @@
+--- 
+layout: post
+title: "Testing PostgreSQL replication solutions: Slony-I"
+mt_id: 16
+date: 2009-05-16 02:00:23 +02:00
+---
+"Slony-I":http://www.slony.info/ is a trigger-based replication solution which allows you to replicate database tables and sequences asynchronously from one master to several read-only slaves (which can also be cascaded).
+
+Trigger-based means, that each table and sequence which gets replicated has triggers assigned, which will fire whenever the content of the given database object changes. The stored procedures, which are associated in the triggers, will then record the changes and store these in a replication log table. Separate daemons monitor the log table for changes and distribute the changes according to their defined rules.
+
+This approach allows for extremely flexible setups, having different master servers for different tables, but this comes at a price. 
+First - this kind of replication solution is very complex. There are triggers, stored procedures and very much meta-information (think "What has to get sent where?") in the database, with separate daemons doing the actual work.
+
+Furthermore, dealing with the triggers also necessitates strict rules when it comes to DDL changes. The Slony-I "documentation":http://www.slony.info/documentation/ has further information on "this topic":http://www.slony.info/documentation/ddlchanges.html.
+
+And last but not least, the double write of every change ("in place" and in the logging table) also causes overhead for writes, approximately 2.5 times the data you'd have when not using Slony-I (Numeric and Date/Time values are much larger in the log table, since they only get stored in their ASCII representation there).
+
+See also the Slony-I ["introduction on their site":http://www.slony.info/documentation/slonyintro.html].
+
+
+That being said, let's see how this works:
+
+h1. Under the hood
+
+
+h2. Slony-I components
+
+There're a few things that make Slony-I tick:
+
+h3. PostgreSQL
+
+Since most of the interesting things happen inside PostgreSQL in the form of triggers and stored procedures, Slony-I can naturally not work without PostgreSQL ;).
+
+All Slony-I related information (nodes, replication sets, log entries, etc.) is stored in a schema called "_$SLONYCLUSTERNAME".
+
+h3. slon
+
+slon is the daemon which takes care of the actual data replication, monitoring the Slony-I log tables and applying the changes to the various nodes.
+
+h3. slon_tools.conf
+
+The "shape" of the cluster should be accurately documented in slon_tools.conf. Many Slony-I helper scripts use the information in the slon_tools.conf to generate the necessary slonik commands.
+
+h3. slonik
+
+slonik is the Slony-I command processor, parsing slonik commands and calling stored procedures on the various nodes to reflect the desired changes.
+
+
+Please also read "Slony-I Concepts":http://www.slony.info/documentation/concepts.html to understand the terms I'm going to use from now on ;).
+
+
+h2. The pgexerciser schema
+
+Since using Slony-I requires a good understanding of the schema your application uses, I'll explain how pgexerciser does it's magic. pgexerciser tries to implement an overly trivialized auction application. There are users, who can create auctions and bid on auctions. Every bid is "sanity checked" in the database.
+
+h3. user
+
+<pre>
+ Column |  Type   |                     Modifiers
+--------+---------+---------------------------------------------------
+ id     | integer | not null default nextval('user_id_seq'::regclass)
+ name   | text    |
+</pre>
+
+Boring table, two columns, one Primary Key doubling as the user id, one for usernames.
+
+h3. auction
+
+<pre>
+   Column    |           Type           |                      Modifiers
+-------------+--------------------------+------------------------------------------------------
+ id          | integer                  | not null default nextval('auction_id_seq'::regclass)
+ creator     | integer                  | not null
+ description | text                     | not null
+ current_bid | numeric                  | not null default 0
+ end_time    | timestamp with time zone | not null default now()
+Indexes:
+    "auction_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "auction_creator_fkey" FOREIGN KEY (creator) REFERENCES "user"(id)
+</pre>
+
+
+Primary Key as auction id, the auctions creator (foreign key constraint on user table), auction description, current highest bid (updated via a trigger on the bid table) and the auctions end time.
+
+h3. bid
+
+<pre>
+ Column  |           Type           |                    Modifiers
+---------+--------------------------+--------------------------------------------------
+ id      | integer                  | not null default nextval('bid_id_seq'::regclass)
+ bidder  | integer                  | not null
+ auction | integer                  | not null
+ bid     | numeric                  | not null
+ time    | timestamp with time zone | not null default now()
+Indexes:
+    "bid_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "bid_auction_fkey" FOREIGN KEY (auction) REFERENCES auction(id) ON DELETE CASCADE
+    "bid_bidder_fkey" FOREIGN KEY (bidder) REFERENCES "user"(id)
+Triggers:
+    update_auction_current_bid BEFORE INSERT OR UPDATE ON bid FOR EACH ROW EXECUTE PROCEDURE update_auction_current_bid()
+</pre>
+
+Primary Key as bid id, the bidder (FK constraint on user table), the auction id (FK on auction table), the bid amount and a timestamp.
+
+There's a trigger which validates every bid (checks if the new bid is higher than the current highest bid and if the auction hasn't ended already) and if it's valid, updates the current_bid in the auction table.
+
+
+h1. Getting started
+
+As always, please make sure that your environment looks like as described in ["this post":http://blogs.amd.co.at/robe/2009/05/testing-postgresql-replication-solutions-basic-setup.html].
+
+h2. Preparing the environment
+
+As a first step, run
+
+<pre>
+master1:~/pgworkshop# ./envorcer slony
+</pre>
+
+This will 
+
+* create a PostgreSQL superuser called "slony" on both nodes
+* disable all access constraints on all databases network-wise
+* create a slon_tools.conf prepared for the pgexerciser schema
+* copy the pgexerciser schema to the "slave node"
+* add startup entries for the slon daemons on master1.
+
+h2. The slon_tools.conf
+
+The slon_tools.conf is not necessary for normal operation of a Slony-I cluster, it's just a reference for the "altperl Scripts":http://www.slony.info/documentation/adminscripts.html#ALTPERL which we will use for cluster administration.
+
+There's few documentation for the config file itself, but it's heavily commented.
+
+/etc/slony1/slon_tools.conf contains the version edited for our schema, /usr/share/doc/slony1-bin/examples/slon_tools.conf-sample.gz is the original file as supplied by Slony-I, which contains more comments.
+
+h2. slonik et al
+
+I won't go into much detail about slonik and the commands it expects - the userland tools we use (mostly) do what they're supposed to do, so there's no need to dive into this right now. See the Slony-I "command reference":http://slony.info/documentation/commandreference.html for more information about the slonik commands.
+
+h2. Bootstrapping slony
+
+Running "slonik_init_cluster" generates the necessary slonik commands based on /etc/slony1/slon_tools.conf to initialize a Slony-I cluster, which basically means that slonik will create the special Slony-I schema on all configured nodes. You can either review the commands or just pipe the output to slonik to get started. Afterwards make sure to start the slon daemons which are necessary to actually replicate data.
+
+<pre>
+master1:~/pgworkshop# slonik_init_cluster | slonik
+<stdin>:10: Set up replication nodes
+<stdin>:13: Next: configure paths for each node/origin
+<stdin>:16: Replication nodes prepared
+<stdin>:17: Please start a slon replication daemon for each node
+master1:~/pgworkshop# /etc/init.d/slony1 start
+Starting Slony-I daemon: 1 2.
+master1:~/pgworkshop#
+</pre>
+
+From now on you can monitor the actions of the slon daemons in "/var/log/slony1" on master1.
+
+Now it's also a good time to start pgexerciser to get some movement in the database.
+
+
+h2. The Slony-I schema
+
+I already mentioned that Slony-I stores much information related to replication in a special schema; to see what's actually in there you can use
+
+<pre>
+master1:~/pgworkshop# psql sqlsim -c '\dt _slonytestcluster.'
+</pre>
+
+See the "Slony-I schema documentation":http://www.slony.info/documentation/schema.html for further information on the tables and stored procedures.
+
+
+h2. Replicating our first few tables
+
+To start the replication of data to the other node, we need to define a replication set first.
+
+I've prepared the set in the slon_tools.conf already, there is a set called "set1" consisting of the tables "user", "bid" and "auction". To create the replication set in the slony schema in the database, we need to run slonik_create_set:
+
+<pre>
+master1:~# slonik_create_set 1 | slonik
+<stdin>:16: Subscription set 1 created
+<stdin>:17: Adding tables to the subscription set
+<stdin>:21: Add primary keyed table public.user
+<stdin>:25: Add primary keyed table public.bid
+<stdin>:29: Add primary keyed table public.auction
+<stdin>:32: Adding sequences to the subscription set
+<stdin>:33: All tables added
+master1:~#
+</pre>
+
+As always, you can check the commands slonik is going to run by ommiting the piped call to the slonik interpreter.
+
+Creating the set alone won't buy us anything though, we also need to subscribe a second node to it:
+
+<pre>
+master1:~# slonik_subscribe_set 1 2 | slonik
+<stdin>:10: Subscribed nodes to set 1
+master1:~#
+</pre>
+
+In the logfile of node2 we can now see that the data is going to be copied from the master server:
+
+<pre>
+[..]
+2009-05-16 00:16:19 CEST DEBUG2 remoteWorkerThread_1: Received event 1,1674 ENABLE_SUBSCRIPTION
+2009-05-16 00:16:19 CEST DEBUG1 copy_set 1
+2009-05-16 00:16:19 CEST DEBUG1 remoteWorkerThread_1: connected to provider DB
+2009-05-16 00:16:19 CEST DEBUG2 remoteWorkerThread_1: prepare to copy table "public"."user"
+2009-05-16 00:16:19 CEST DEBUG2 remoteWorkerThread_1: prepare to copy table "public"."bid"
+2009-05-16 00:16:19 CEST DEBUG2 remoteWorkerThread_1: prepare to copy table "public"."auction"
+[..]
+</pre>
+
+and later on that new data created by pgexerciser is periodically transferred:
+
+<pre>
+2009-05-16 00:19:41 CEST DEBUG2 remoteListenThread_1: queue event 1,1840 SYNC
+2009-05-16 00:19:41 CEST DEBUG2 remoteWorkerThread_1: Received event 1,1840 SYNC
+2009-05-16 00:19:41 CEST DEBUG2 calc sync size - last time: 1 last length: 4012 ideal: 14 proposed size: 3
+2009-05-16 00:19:41 CEST DEBUG2 remoteListenThread_1: queue event 1,1841 SYNC
+2009-05-16 00:19:41 CEST DEBUG2 remoteWorkerThread_1: SYNC 1840 processing
+2009-05-16 00:19:41 CEST DEBUG2 remoteWorkerThread_1: syncing set 1 with 3 table(s) from provider 1
+2009-05-16 00:19:41 CEST DEBUG2  ssy_action_list length: 0
+2009-05-16 00:19:41 CEST DEBUG2 remoteWorkerThread_1: current local log_status is 0
+2009-05-16 00:19:41 CEST DEBUG2 remoteWorkerThread_1_1: current remote log_status = 0
+2009-05-16 00:19:41 CEST DEBUG2 remoteHelperThread_1_1: 0.001 seconds delay for first row
+2009-05-16 00:19:41 CEST DEBUG2 remoteHelperThread_1_1: 0.003 seconds until close cursor
+2009-05-16 00:19:41 CEST DEBUG2 remoteHelperThread_1_1: inserts=3 updates=2 deletes=0
+2009-05-16 00:19:41 CEST DEBUG2 remoteWorkerThread_1: new sl_rowid_seq value: 1000000000000000
+2009-05-16 00:19:41 CEST DEBUG2 remoteWorkerThread_1: SYNC 1840 done in 0.025 seconds
+</pre>
+
+
+And when we check the slave server the data also looks good:
+
+
+<pre>
+slave1:~# psql sqlsimslave -c "SELECT * FROM bid ORDER BY id DESC LIMIT 3"
+  id  | bidder | auction |  bid   |             time
+------+--------+---------+--------+-------------------------------
+ 2164 |     11 |      86 |   9.86 | 2009-05-16 00:34:15.510123+02
+ 2163 |      7 |      83 |  46.96 | 2009-05-16 00:34:15.177281+02
+ 2162 |     11 |      64 | 267.12 | 2009-05-16 00:34:15.16756+02
+(3 rows)
+
+slave1:~#
+</pre>
+
+
+h2. About SYNCs
+
+Data between nodes is only replicated with every SYNC event. Additionally, Slony-I will introduce SYNC events periodically as a way to allow monitoring solutions to check if a node has fallen behind too much.
+
+The Debian packaged slon will check for new data every second and introduce a SYNC event if it finds any. If there was no SYNC event for 10 seconds it will introduce a "keep-alive" SYNC.
+
+
+h2. Adding new objects to replication
+
+We knowingly ignored the sequences (used for the primary keys) in our schema when defining the first replication set - a quick check on the subscriber server shows that they're troublingly low compared to the origin:
+
+<pre>
+master1:~# psql -h slave1 sqlsimslave -c "SELECT nextval('bid_id_seq')"
+ nextval
+---------
+       1
+(1 row)
+
+master1:~# psql sqlsim -c "SELECT nextval('bid_id_seq')"
+ nextval
+---------
+    2931
+(1 row)
+
+master1:~#
+</pre>
+
+Slony-I doesn't allow you to add new objects to an existing replication set, you have to define a new set and then merge it into an existing one:
+
+<pre>
+master1:~# slonik_create_set 2 | slonik
+<stdin>:16: Subscription set 2 created
+<stdin>:17: Adding tables to the subscription set
+<stdin>:20: Adding sequences to the subscription set
+<stdin>:24: Add sequence public.auction_id_seq
+<stdin>:28: Add sequence public.bid_id_seq
+<stdin>:32: Add sequence public.user_id_seq
+<stdin>:33: All tables added
+master1:~# slonik_subscribe_set 2 2 | slonik
+<stdin>:10: Subscribed nodes to set 2
+master1:~#
+</pre>
+
+And now the sequence on the slave server is also correct again:
+
+<pre>
+master1:~# psql -h slave1 sqlsimslave -c "SELECT nextval('bid_id_seq')"
+ nextval
+---------
+    3267
+(1 row)
+
+master1:~#
+</pre>
+
+
+And to reduce the amount of sets to maintain:
+
+<pre>
+master1:~# slonik_merge_sets 1 1 2 | slonik
+<stdin>:10: Replication set 2 merged in with 1 on origin 1
+master1:~#
+</pre>
+
+
+Be sure to update the set definition in slon_tools.conf every time you modify a set!
+
+
+h2. Homework!
+
+I think by now you've got the hang of the slonik tools.
+
+Try to play through the following scenario:
+
+h3. Defining some data
+
+Since DDL changes in Slony-I environments are "not to be taken lightly":http://slony.info/documentation/ddlchanges.html, try applying the script in /root/pgworkshop/configs/slony/add_start_time.sql with slonik_execute_script.
+
+h3. Moving on
+
+Node1 needs to have some maintenance downtime. Move the replication set from Node1 to Node2. Check the last bid in pgexerciser. Restart it with "./pgexerciser -h slave1 -d sqlsimslave".
+
+h3. Shit hits the fan
+
+Node2/slave1 experiences a horrible case of "killall -9 postgres". Failover the replication set back to Node1. Check pgexerciser.
+
+h3. Rebuilding our shattered dreams
+
+Restart PostgreSQL on slave1. Since Node2 is now in an indeterministic state as far as Slony-I is concerned, you need to rebuild it from scratch. Cheat sheet: slonik_drop_node, slonik_store_node, slonik_subscribe_set.
+
+
+h1. Final words
+
+Slony-I is not for the faint of heart. To quote the documentation:
+
+
+bq.. Thus, examples of cases where Slony-I probably won't work out well would include:
+
+[..]
+Sites where configuration changes are made in a haphazard way.
+[..]
+
+
+p. And regarding DDL changes:
+
+bq. Unfortunately, this nonetheless implies that the use of the DDL facility is somewhat fragile and fairly dangerous. Making DDL changes must not be done in a sloppy or cavalier manner. If your applications do not have fairly stable SQL schemas, then using Slony-I for replication is likely to be fraught with trouble and frustration.
+
+So, test your procedures beforehand, document everything, monitor everything and be extra-sure when modifying the cluster.
+
+Be wary that the slon daemons are as important as the PostgreSQL databases itself, so treat them as such (especially when it comes to HA/Failover)
+
+
+But in the end, if you treat Slony-I nicely it's a trusty, reliable and proven solution for your asynchronous master-to-multiple-slaves replication needs.

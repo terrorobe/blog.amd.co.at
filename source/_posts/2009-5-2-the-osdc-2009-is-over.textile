@@ -1,0 +1,62 @@
+--- 
+layout: post
+title: The OSDC 2009 is over
+mt_id: 11
+date: 2009-05-02 17:27:00 +02:00
+---
+It was a nice conference, the guys and gals from "Netways":http://www.netways.de/ surely know how to run an event. It's all the nice little details which make up a great experience[1].
+
+I was also surprised by NH Hoteles, the "Nuremberg City":http://www.nh-hotels.com/nh/en/hotels/germany/nurnberg/nh-nuernberg-city.html one greeted us with one of the most attractive parking garages I've ever seen (_very_ clean, "follow me"-lines on the floor, automatic hinged safety doors, complimentary window cleaning for hotel guests, etc.) and the hotel lived up to the standards it set in it's garage ;). The only problem I noticed was that the dining area was constantly understaffed for the 70-something people which attended the conference.
+
+The lineup of the conference was quite nice although I prefer "war stories" told from real world scenarios over feature presentations of a single solution. Fortunately "Kristian Köhntopp":http://kris.koehntopp.de/ was able to speak about his experiences from his times as a MySQL consultant and the stuff he's doing over at booking.
+
+More on that after the break.
+
+fn1. A few examples:
+
+* Everything planned & communicated in advance, no uncertainties on what/how/where
+* Taped down cables everywhere
+* Enough power sockets for laptops and other gadgets in every conference room and the lounge area
+* Nameplates on the speakers podests
+* Constantly refilled/replaced bottles & glasses 
+The highlights of the conference for me were (in chronological order):
+
+h2. Puppet
+
+"Luke Kanies":http://madstop.com/ ("Reductive Labs":http://reductivelabs.com/) talked a bit about "Puppet":http://reductivelabs.com/products/puppet/, which most of the attendees already knew. It's still the best configuration management solution for heterogenous environments where the "foil ball" approach (his words!) of golden master images don't cut the slack anymore. Another part of his talk was targeted about how the Puppet development approach and community integration is way better than what he experienced with the author(s) of cfengine back then, which eventually caused him to start his own thing. Puppet shows progress in critical areas (dropping XML-RPC in favor of REST to increase performance especially when serving static files) but still has a long way to come. One of the issues Kristian mentioned is, that Facter only supports scalar values natively and no complex data structures. This is very limiting when you need to analyze complex data structures e.g. the LVM configuration of a server.
+
+h2. DRBD, the stuff that was formerly known as Heartbeat & KVM
+
+"Florian Haas":http://blogs.linbit.com/florian ("Linbit":http://www.linbit.com/en/, the company behind "DRBD":http://www.drbd.org/) showed how Virtualization & HA play together with the building blocks being KVM, Pacemaker, OpenAIS and DRBD. He talked a bit about the infighting in the Linux-HA/Heartbeat community, which eventually lead to the current Pacemaker & OpenAIS solution (which is not yet available in stock Debian systems). One of the issues full and paravirtualization techniques have over container-based solutions like OpenVZ and Solaris Zones is performance. He presented "a few slides":http://www.percona.com/ppc2009/PPC2009_virtual_block_perf.pdf from his talk at the "Percona Performance Conference 2009":http://conferences.percona.com/percona-performance-conference-2009/schedule.html, showing latency issues in KVM, which are very bad in systems with large amounts of unbatched transactions. Since his results were only a week old it's too early to comment about the reasons and resolutions, the bottom line was that it might be too early to bury Xen until these things are resolved.
+
+Over a talk with Florian I was finally able to stop worrying and love shared-nothing architectures. Florian told me that my association of DRBD with "something to keep services on shoddy hardware online" wasn't too far-fetched, since the first version of DRBD was written out of the need to run complex computation jobs on rickety machines in a CS lab without loosing the complete calculation if one of the nodes hit the dust in A Bad Way. But since then DRBD has evolved considerably since then and with the overwhelmingly positive feedback of other conference attendees and DRBD's availability in stock Debian and RedHat distributions I'm finally convinced that it's A Good Thing ;).
+
+h2. Incubation completed in 3... 2... 1...
+
+The other talks of the day that I attended weren't that interesting and the latent flu I brought with me from last week finally started to kick in, causing me to call it a day at 19:00 and sweat through the night.
+
+h2. Systematic management of 1000 heterogenous nodes
+
+On the second day "Kristian Köhntopp":http://kris.koehntopp.de/ ("Booking.com":http://www.booking.com/) started the day with a talk about how they do systems (and database) management at their shop (in a hurry: HP hardware for easy deployment and MAC address management, PXE and atftpd (with custom database backend) in combination with Kickstart for basic setup, puppet and yum for everything else). The basic system they install, which is identical for every server, is a minimum CentOS installation with a Puppet client, all customization is done afterwards with puppet. Kris also told some stories about outstanding Puppet issues (Facter/Puppet only handling scalar values, random Facter state corruptions, horrible fileserving with Puppet 0.24, etc.) but it is still the best tool for the job and way more flexible than cfengine which, they used previously.
+
+h2. Why has MySQL still got a market share in professional environments?
+
+I had an interesting talk with Kris over a glass of peach juice (NH is sooo exclusive!) about why MySQL's oddities don't hurt that much in ["BASE":http://queue.acm.org/detail.cfm?id=1394128]-environments and why a simple and (somewhat) flexible replication solution is of utmost importance in such scenarios. Expect more on that topic in this blog in the future. I won't say that I'm convinced that MySQL is the best solution in those environments, but at least now I  understand that it's a viable choice ;).
+
+h2. Postfix ate my Spam!
+
+"Charly Kühnast":http://kuehnast.com/s9y/ (RZ Niederrhein) then presented his Postfix-based spam filtering solution. I forgot the exact numbers, but it looked very promising. The basic components were (from the top of my head, I think he talked about 6 tiers but was only able to remember 5...)
+
+* Policyd with RBLs
+* Header checks (HELO, sender/recipient verification, etc.)
+* SpamAssassin
+* FuzzyOCR
+* ClamAV with custom definition files
+
+which were quite effective in combination and very low in maintenance requirements by his own words.
+
+h2. Wrapping it up
+
+After that it was time for my workshop (more on that later) followed by discussions and a final beer with the guys from Netways and the few attendees which were still around.
+
+I hit the road with "Mika":http://michael-prokop.at/ at 18:15 and we were back in Vienna 5 hours later...

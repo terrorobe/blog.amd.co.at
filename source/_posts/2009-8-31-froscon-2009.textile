@@ -1,0 +1,70 @@
+--- 
+layout: post
+title: FrOSCon 2009
+mt_id: 21
+date: 2009-08-31 23:16:22 +02:00
+---
+h1. FrOSCon
+
+FrOSCon 2009 was a nice break from the stress at work, replacing it by stress in the weekend. The atmosphere was nice as usual and the planning good as every year. And with "Andreas Scherbaum":http://andreas.scherbaum.la/blog/ playing airport- and venue taxi the transportation didn't leave any room for improvement ;).
+
+
+A few of the things that stuck with me were
+
+
+h2. Virtualization & Cloud Management
+
+There's a lot of stuff going on in the Virtualization world, since by now everybody noticed that just hypervising things doesn't cut the slack and that you need to manage the stuff you deployed somehow. Which is a good thing, by the way. 
+
+"OpenQRM":http://www.openqrm.com/ gets "Puppet":http://reductivelabs.com/products/puppet/ support, finally beating the "foil ball":http://madstop.com/2009/02/04/golden-image-or-foil-ball/. "Eucalyptus":http://www.eucalyptus.com/ could emerge as a strong player in the IaaS area (Infrastructure as a Service) especially with the "Walrus":http://open.eucalyptus.com/wiki/EucalyptusStorage_v1.4 storage service. And there's a plethora of other projects like "OpenNebula":http://www.opennebula.org/, "Nimbus":http://workspace.globus.org/, "Aspen":http://grid.ucalgary.ca/projects/DataCentre/index.html, "Enomaly":http://www.enomaly.com/ and "Reservoir":http://www.reservoir-fp7.eu/, which also might have their respective strong points.
+
+
+But all of them have one thing in common:
+
+They are hardly usable in production environments.
+
+If you need finished products stick to your VMware for now. If you go for one of the FOSS products in a large environment be prepared to hit a few speedbumps along your way and hack lots of essential stuff by yourself.
+
+
+h2. Apache Hadoop & Mahout
+
+Isabel Drost talked about "Mahout":http://lucene.apache.org/mahout/, which is a project focused on "machine learning":http://en.wikipedia.org/wiki/Machine_learning, extending from "Lucene":http://lucene.apache.org/, doing it's magic with "Hadoop":http://hadoop.apache.org/. Again very abstract and I get the impression that MapReduce based stuff isn't still quite ready for the unwashed masses.
+
+Side notes: The Apache people start to get scary by now, I bet they're about to start an operating system project very soon now. And both Hadoop and Mahout have Elephant logos!
+
+
+h2. PostgreSQL & Performance
+
+My presentation was haunted by far too few time to prepare, a experience-wise very diverse audience and far too much content. For the future, I'll pick a skill level in advance and stick to it. And do timings upfront. Promised. ;)
+
+
+
+h2. Perl::Critic
+
+"René Bäcker":http://www.renee-baecker.de/ gave a talk on "Perl::Critic":http://search.cpan.org/~elliotjs/Perl-Critic-1.104/lib/Perl/Critic.pm, an interesting module to enforce coding standards in Perl projects (You wouldn't believe it's not an oxymoron!). Most of it's rule set based on Damian Conways' "Perl Best Practices":http://oreilly.com/catalog/9780596001735/ so it gives you a good head start for maintainable code. It's very easy to extend so enforcing all your major and minor pet peeves isn't much of a problem.
+
+
+h2. PostgreSQL (in the real world)
+
+Stefan Kaltenbrunner gave us insights in how the PostgreSQL project infrastructure looks like and what role "Panama":http://www.postgresql.org/about/servers plays in the big picture ;).
+
+In the afternoon we had a few lighting talks in the PostgreSQL Developer Room. Two excerpts:
+
+I talked a bit about Geizhals.at and how we use PostgreSQL over here
+
+Marek Swierzy from OSSCAD GmbH described how they use PostgreSQL to store temperature readings (among other measurements) which they collect from fiber optic cables over distances up to 12km with a resolution of 0,5m with just the cable as sensor!
+
+See the "PostgreSQL Wiki":http://wiki.postgresql.org/wiki/FrOSCon_2009 for a complete list of talks.
+
+h2. OpenSQL Camp Database Panel Discussion
+
+More an interactive question time than a panel discussion but interesting nevertheless. Now I finally know what the main market of "Firebird":http://www.firebirdsql.org/ is (Embedded database engine for applications). And "Blackray":http://www.blackray.org/ seems to be an interesting contender on the FTS market, when you've got enough RAM to throw at the problem.
+
+h2. Summing it up
+
+All in all it was a nice conference with very much content and far too many "parallel tracks":http://programm.froscon.org/2009/day_2009-08-22.en.html ;).
+
+
+<form mt:asset-id="25" class="mt-enclosure mt-enclosure-image" style="display: inline;"><a href="http://blogs.amd.co.at/robe/assets_c/2009/08/froscon-25.html" onclick="window.open('http://blogs.amd.co.at/robe/assets_c/2009/08/froscon-25.html','popup','width=1600,height=1200,scrollbars=no,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false"><img src="http://blogs.amd.co.at/robe/assets_c/2009/08/froscon-thumb-200x150-25.jpg" width="200" height="150" alt="froscon.jpg" class="mt-image-none" style="" /></a></form>
+
+p. Würstel Queue

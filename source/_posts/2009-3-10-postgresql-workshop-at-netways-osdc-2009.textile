@@ -1,0 +1,14 @@
+--- 
+layout: post
+title: PostgreSQL Workshop at Netways OSDC 2009
+mt_id: 9
+date: 2009-03-10 21:04:30 +01:00
+---
+I'll be giving a workshop on "PostgreSQL":http://www.postgresql.org/ replication at the Netways Open Source Datacenter Conference in Nuremberg, Germany on 29. & 30. April 2009.
+
+Topics will include a short introduction in the theory of data replication in "RDBMS":http://en.wikipedia.org/wiki/RDBMS context as well as giving an overview of the various replication solutions which are currently available for PostgreSQL. The hands-on part will focus on a few common scenarios with "Log Shipping":http://www.postgresql.org/docs/8.3/interactive/warm-standby.html and "Slony-I":http://www.slony.info/ (TBD).
+
+The workshop has only 20 slots available, so register early if you're interested.
+
+
+<form mt:asset-id="11" class="mt-enclosure mt-enclosure-image" style="display: inline;"><a href="http://www.netways.de/osdc/" target="_blank"><img alt="imspeaking.jpg" src="http://blogs.amd.co.at/robe/2009/03/10/imspeaking.jpg" width="300" height="202" class="mt-image-center" style="text-align: center; display: block; margin: 0 auto 20px;" /></a></form> 

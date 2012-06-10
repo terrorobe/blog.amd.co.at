@@ -1,0 +1,13 @@
+--- 
+layout: post
+title: The effects of vibration damage mitigation in modern disk drives
+mt_id: 8
+date: 2009-01-01 21:05:47 +01:00
+---
+"Brendan Gregg":http://blogs.sun.com/brendan/ over at Sun has made an "insightful discovery":http://blogs.sun.com/brendan/entry/unusual_disk_latency on how vibration affects the operation of modern disc drives.
+
+Apparently, *screaming* at the disks introduces unexpected vibration which the drives react to with slowing down/pausing I/Os for a short period of time, resuming at full speed shortly afterwards.
+
+This is a pretty graphic example of what forms unwantend vibration can take (other sources may include e.g. worn out ball bearings in fans or "saber saws":http://thedailywtf.com/Articles/It_Doubles_as_a_Saw_Horse.aspx) and how it affects disk performance. And those sources of slowdown also might be completely unnoticed unless you have performance data of your I/O latency with sufficient resolution.
+
+Strong plus points again for DTrace and the _AJAX_ performance data interface, that's something other vendors probably can't offer in the same quality and most likely not free of charge in their SAN and NAS products. 

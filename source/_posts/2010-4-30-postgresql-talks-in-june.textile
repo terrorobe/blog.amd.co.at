@@ -1,0 +1,24 @@
+--- 
+layout: post
+title: PostgreSQL talks in June
+mt_id: 24
+date: 2010-04-30 18:36:35 +02:00
+---
+Here's a short recap about my speaking engagements in June
+
+h2. AMOOCON
+
+<form mt:asset-id="28" class="mt-enclosure mt-enclosure-image" style="display: inline;"><img alt="amoocon.png" src="http://blogs.amd.co.at/robe/2010/04/30/amoocon.png" width="231" height="99" class="mt-image-center" style="text-align: center; display: block; margin: 0 auto 20px;" /></form>
+
+"AMOOCON":http://www.amoocon.de/ takes place from **4th to 6th June** in **Rostock, Germany**. The conference has it's roots in the FOSS VoIP communities but has a more broad focus these days. I will hold a "full length" PostgreSQL advocacy "talk":http://www.amoocon.de/talks/137 as well as a 20 minute PostgreSQL 9.0 "primer":http://www.amoocon.de/talks/138.
+
+
+
+h2. Netways OSDC
+
+<form mt:asset-id="30" class="mt-enclosure mt-enclosure-image" style="display: inline;"><img alt="Iam speaking_button_.png" src="http://blogs.amd.co.at/robe/Iam%20speaking_button_.png" width="300" height="234" class="mt-image-center" style="text-align: center; display: block; margin: 0 auto 20px;" /></form>
+
+It's my "second time":http://www.netways.de/osdc/y2009/programm/w/michael_renner_postgresql_repliziert_ein_ueberblick/ at the "OSDC":http://www.netways.de/osdc/y2010/, again in **Nuremberg, Germany** on **23rd & 24th of June**. I'll hold a talk and give a short presentation on the native replication mechanisms PostgreSQL is going to provide with the upcoming 9.0 release.
+
+
+As every year, there might be talks & presentations on these topics at the "Metalab":http://metalab.at/ shortly before or after the two events; follow me on "twitter":http://twitter.com/terrorobe/ or watch the "event list":http://metalab.at/calendar/ for updates if you're interested in these. 

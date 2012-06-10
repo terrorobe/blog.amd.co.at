@@ -1,0 +1,97 @@
+--- 
+layout: post
+title: "Testing PostgreSQL replication solutions: Log shipping with walmgr"
+mt_id: 15
+date: 2009-05-12 19:19:14 +02:00
+---
+As we've seen in our "previous example":http://blogs.amd.co.at/robe/2009/05/testing-postgresql-replication-solutions-log-shipping-with-pg-standby.html, doing log shipping with pg_standby can be quite a hassle if you take your slave servers regularly online to use them for queries and then want to resume replication again.
+
+The guys from Skype were probably faced by exactly the same problems when they decided to write walmgr.
+
+If you're not familiar with log shipping I strongly suggest to read the "previous post":http://blogs.amd.co.at/robe/2009/05/testing-postgresql-replication-solutions-log-shipping-with-pg-standby.html first. 
+h1. walmgr?!
+
+"walmgr":https://developer.skype.com/SkypeGarage/DbProjects/SkyTools/WalMgr is a tool written in Python, which eases deployment and maintenance of log shipping slaves. It provides easy one-shot-commands to create backups from running PostgreSQL servers, implements WAL-file-management (deleting files not needed anymore) and makes bringing slave-servers online for production use a breeze. 
+
+Furthermore it can also be configured to perioidically sync the currently used WAL-segment. This greatly reduces the amount of lost transactions when a slave server has to be brought online "as is".
+
+h1. I'm sold! Please tell me how this works, Jim!
+
+h2. A few warning words upfront
+
+For basic setup of the virtual machines see the "first article":http://blogs.amd.co.at/robe/2009/05/testing-postgresql-replication-solutions-basic-setup.html in the series. Prepare the walmgr environment with
+
+<pre>
+master1:~/pgworkshop# ./envorcer walmgr
+</pre>
+
+walmgr relies on fairly extensive configuration files, pointing to all the necessary infrastructure to do it's magic. Additionally, you've to take care to do all operations as the "postgres" user, since walmgr does a lot of copying around and does not enforce correct ownership of all files it touches by itself. Permission issues can be tedious to work out and walmgr isn't especially helpful to point out which files/directories need to be corrected.
+
+h2. A short word on configuration
+
+In /root/pgworkshop/walmgr reside all necessary tools, configuration files and documentation for walmgr. Most of the parameters in wal-[master|slave].ini are self-explanatory, the puzzling ones are documented in walmgr.txt.
+
+The whole directory including the wal-slave.ini is copied to the slave server when running the "envorcer" script. The wal-master.ini is only used on the master server and the wal-slave.ini is only used on the slave server. Because of this, they contain a bit of redundant information.
+
+h2. Setting up the master
+
+Since I've already prepared all the necessary configuration, we can dive right in.
+
+First, we need to prepare the master server for log shipping with walmgr:
+
+<pre>
+postgres@master1:/root/pgworkshop/walmgr$ ./walmgr.py wal-master.ini setup
+</pre>
+
+This sets archive_command, enables archive_mode in the postgresql.conf of the given cluster and creates the directory structure needed by walmgr on the slave server. You should also set archive_timeout to 60 seconds to get some segment switching in our test scenario.
+
+Then restart the PostgreSQL cluster ("pg_ctlcluster 8.3 walmgr restart") and start the pgexerciser.
+
+At this point PostgreSQL happily writes transactions to it's WAL, whose segments get switched every 60 seconds and copied to the slave server as per the configuration in wal-master.ini.
+
+h2. Starting recovery
+
+To start recovery on the slave server you just need to run:
+
+<pre>
+postgres@slave1:/root/pgworkshop/walmgr$ ./walmgr.py wal-slave.ini restore data.master
+</pre>
+
+It's important to explicitly specify the name of the backup (which can be listed/shown with the "listbackups" command) to have walmgr _copy_ the backup from it's archive-directory ("/srv/walmgr-data") to the $PGDATA path; if you don't specify it walmgr will _move_ the latest backup to $PGDATA, making the particular backup unavailable for any future recovery operations.
+
+To see if the log shipping is working, see the "Doing some transactions" section in the ["previous post":http://blogs.amd.co.at/robe/2009/05/testing-postgresql-replication-solutions-log-shipping-with-pg-standby.html].
+
+h2. Bringing up the Slave
+
+If you want to use the slave server to do some actual work you have to bring it online first:
+
+<pre>
+postgres@slave1:/root/pgworkshop/walmgr$ ./walmgr.py wal-slave.ini boot
+</pre>
+
+This will stop recovery and bring the database online, voiding the copy for further recovery/replication use.
+
+
+h2. Resuming Replication
+
+To resume the recovery operation a simple
+
+<pre>
+postgres@slave1:/root/pgworkshop/walmgr$ ./walmgr.py wal-slave.ini restore data.master
+</pre>
+
+does the trick. Be aware though, that PostgreSQL has to replay all WAL-files which have accumulated since the time the backup has been run. On databases with write-heavy loads this can take quite some time.
+
+h2. Cutting the losses
+
+walmgr can also be daemonized to synchronize the currently active WAL-segment at periodic intervals. This reduces the amount of lost transactions from "transactions since last segment switch" to "transactions in the last $loop_delay seconds" when bringing the slave server online.
+
+I suggest running the following command in a screen terminal:
+
+<pre>
+postgres@master1:/root/pgworkshop/walmgr$ ./walmgr.py wal-master.ini syncdaemon
+</pre>
+
+since walmgr won't detach from the terminal and inform you on what's happening on STDOUT.
+
+If you bring the slave online when syncdaemon is running, the most recent entry in the bid table shouldn't be older than the interval configured in the config file.

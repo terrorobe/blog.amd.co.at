@@ -1,0 +1,118 @@
+--- 
+layout: post
+title: "Testing PostgreSQL replication solutions: Log shipping with pg_standby"
+mt_id: 14
+date: 2009-05-02 21:52:00 +02:00
+---
+h1. Log shipping?!
+
+PostgreSQL offers support for "["shipping":http://www.postgresql.org/docs/8.3/interactive/warm-standby.html]" it's WAL, the "Write Ahead Log":http://www.postgresql.org/docs/8.3/interactive/wal.html, where the changes of every transaction are recorded, to other database systems. The other database system then reads the changes from the WAL file and applies the changes to it's local data store.
+
+Log shipping has the drawback that the slave servers can't be used for queries as long as they are replicating data and cannot be put back in replication after they've been taken online. Additionally the replication isn't very granular, PostgreSQL natively itself will accept only completed WAL files.
+
+On the other hand this mechanism is very efficient and very reliable since the WAL is at the core of normal PostgreSQL operation. 
+h2. The WAL
+
+The WAL files of a PostgreSQL database can be found under $PGDATA/pg_xlog, in Debian $PGDATA is usually /var/lib/postgresql/&lt;VERSION&gt;/&lt;CLUSTERNAME&gt;. Every WAL segment is 16MiB in size (compile-time default) and it's name consists of three separate counters:
+
+h3. Naming
+
+If we take the name "00000001000000030000008E" it tells us that the "timeline":http://www.postgresql.org/docs/8.3/interactive/continuous-archiving.html#BACKUP-TIMELINES of the file is "1", that it belongs to the logical log file (logid) "3" and that it's the 142th (0x8E) segment of the given logfile.
+
+The segment counter increments with every segment switch, the logical log file is incremented (and the segment counter reset to 0) whenever a new segment would overflow the 32bit address space (or "4GiB") of a logical logfile. With a standard segment size of 16MiB this happens every 255 segments.
+
+h3. Switching segments
+
+A WAL segment gets switched when one of the following things happen:
+
+* it's full (16MiB worth of changes have been written)
+* "archive_timeout":http://www.postgresql.org/docs/8.3/interactive/runtime-config-wal.html#GUC-ARCHIVE-TIMEOUT is exceeded
+* "pg_switch_xlog":http://www.postgresql.org/docs/8.3/interactive/functions-admin.html#FUNCTIONS-ADMIN-BACKUP-TABLE is called
+
+h2. Replicating
+
+The mechanism used for reading in WAL files on a slave server is very close to the mechanism that is used when PostgreSQL recovers from an unclean shutdown:
+
+The daemon doesn't know in what state the heap files (tables, indexes, etc.) are and therefore consults the WAL, where changes of every transaction are written to, replaying every transaction since the last CHECKPOINT.
+
+Because the same code-infrastructure is used, the replaying of WAL files is called "recovery mode".
+
+h3. Shipping the files
+
+PostgreSQL has an "archive_command":http://www.postgresql.org/docs/8.3/interactive/runtime-config-wal.html#GUC-ARCHIVE-COMMAND parameter which can be used to configure a command which gets called after every segment switch. This makes it easy to copy completed WAL segments from the master server to a remote system with various mechanisms, e.g. nfs, scp, rsync, etc.
+
+h3. Recovering
+
+To configure a server for recovery you need to place a file named "recovery.conf" into it's $PGDATA directory. A sample recovery.conf might look something like this:
+
+<pre>
+restore_command = '/usr/lib/postgresql/8.3/bin/pg_standby -l -t /var/lib/postgresql/logship.trigger /srv/logship-archive %f %p'
+log_restartpoints = 'true'
+
+# for PITR
+#recovery_target_time = '2009-04-21 19:00:00'
+</pre>
+
+Additionally the server needs a consistent backup in it's $PGDATA directory and access to all WAL files that have been written since the backup.
+
+When started in recovery mode, PostgreSQL will replay WAL files until the program referenced in "restore_command":http://www.postgresql.org/docs/8.3/interactive/continuous-archiving.html#RECOVERY-CONFIG-SETTINGS returns. After that it will take the database online, increment the timeline counter of the WAL file and effectively prevent that the current database can be used as target for recovery again. This is necessary, because modifications can happen to the tables as soon as the database is taken online.
+
+h3. pg_standby
+
+"pg_standby":http://www.postgresql.org/docs/8.3/interactive/pgstandby.html is a contrib tool that watches a given directory for new WAL files and makes these available to PostgreSQL via copying/linking the given files into it's pg_xlog directory.
+
+When using pg_standby there are two main mechanisms for ending replication:
+
+* "Pulling the trigger", meaning: creating the specified trigger file
+* Feeding an incomplete WAL-file: Imagine a crashed server that doesn't boot anymore: if you could salvage the active WAL segment and copy it to the recovery server, PostgreSQL will notice that the WAL segment is incomplete and perform it's normal startup procedure as well as incrementing the timeline.
+
+h3. Resuming recovery
+
+After a slave server has been taken online (and it's timeline was switched) you must copy a backup from the master server and create a new recovery.conf to resume log shipping operation.
+
+h2. Doing it all
+
+Now that we know what to do and how these things work, let's break a few things!
+
+h3. Preparing
+
+Preparing the environments should be rather easy, first make sure, that your machines are ["setup correctly":http://blogs.amd.co.at/robe/2009/05/testing-postgresql-replication-solutions-basic-setup.html].
+
+When both machines are running, run the following command:
+
+<pre>
+master1:~/pgworkshop# ./envorcer logship
+</pre>
+
+This creates a cluster named "logship" on both servers, creates a database for pgexerciser on master1 and installs it's schema to the database.
+
+Additionally, it creates a directory on slave1 where the WAL files will be copied to, enables archive_mode among a few other settings on master1 and copies a base backup of the database & an appropriate recovery.conf to slave1.
+
+h3. Doing some transactions
+
+Start the databases on both servers with pg_ctlcluster and run pgexerciser (no arguments needed) on master1.
+
+archive_timeout is set to 60 seconds, so a logswitch should occur every minute. This can be monitored in a few places:
+
+* The "archiver" process on master1 and the "startup" process on slave1 will show in their processtitle what WAL file they have handled or are expecting next
+* PostgreSQL also keeps track of which files have already been copied on master1 in $PGDATA/pg_xlog/archive_status 
+* The PostgreSQL logfile on slave1 (found in /var/log/postgresql/) will show when the WAL files have been processed
+
+
+h3. Breaking stuff
+
+Now it's up to you. You could either create the trigger file pg_standby watches, "killall -9 postgres" on the master and copy over the active WAL segment or try a "PITR":http://www.postgresql.org/docs/8.3/interactive/continuous-archiving.html#RECOVERY-TARGET-TIME (Point in time recovery)
+
+h3. Resuming recovery, this time for real
+
+After you took the slave online, use the following steps to get back into recovery mode:
+
+<pre>
+slave1:~# killall -9 postgres
+master1:~# psql postgres -c "select pg_start_backup('foo')"
+master1:~# rsync -avH --delete --delete-excluded --exclude pg_xlog/*  /var/lib/postgresql/8.3/logship/ root@slave1:/var/lib/postgresql/8.3/logship
+master1:~# psql postgres -c "select pg_stop_backup()"
+master1:~# scp pgworkshop/configs/logship/recovery.conf root@slave1:/var/lib/postgresql/8.3/logship/
+</pre>
+
+When you start the PostgreSQL cluster on slave1 again, it should start in recovery mode again. More on backing up PostgreSQL databases can be found in the ["documentation":http://www.postgresql.org/docs/8.3/interactive/continuous-archiving.html#BACKUP-BASE-BACKUP].

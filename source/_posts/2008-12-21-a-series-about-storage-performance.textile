@@ -1,0 +1,62 @@
+--- 
+layout: post
+title: A series about storage performance
+mt_id: 6
+date: 2008-12-21 00:47:27 +01:00
+---
+ I always wondered why disks are slow. Not the "I can only copy data with 50MiB/sec slow" but the "Why does this myisamchk/e2fsck/database only do 3MiB/sec" slow. It never itched my nerve that much that I seriously considered "formally" learning about these things, until the first few days at a new job. But I'm getting ahead of myself. 
+h2. The Mirror-Server
+
+My first contact with disks being "too slow" was back in 2003 when running a public mirror for various FOSS projects. I always wondered __why__ running a heavily used, FS-metadata intensive rsync module (Gentoo Portage in my case) off the same disks and filesystem as the large files (packages, ISOs, etc) had such a huge impact on overall performance, and why things seemed so much better when switching to a RAID0 with dedicated disks and Reiser3 on top. Yeah, the increase in performance seems pretty obvious but I never actually got around answering the __why__ back then.
+
+h2. The lecture
+
+Five years later, in 2008, I attended a HP hardware- and performance training course, where I was taught a dogma. Our trainer, Ernst Limbrunner, told us that the write performance for RAID5 systems looked something like this:
+
+bq. Speed of a single device * number of devices / 4 * 0,85
+
+That hit. The rest of the lecture I tried to get my head around the __why__ but failed (and for reasons unbeknownst to me I didn't bother to ask for specifics). Later that day, during a break, I talked to a gruff old Storage administrator, who responded to my naive inquiries about large storage systems with the following question: "Do you even know what a Disk IO is?". I haven't felt caught so offhand since school, when I tended to show up to tests completely unprepared.
+
+The dogma, which seemed to make sense, and the attack on my professional knowledge in an area of expertise which I expected me to be knowledgeable in, stuck with me.
+
+h2. Replications and collisions
+
+At my new job, which I started in November 2008, we had a system environment with a disaster recovery datacenter which should be able to take over operations with no dataloss in case something bad happened to the main datacenter. This implicated that the involved databases needed to be replicated synchronously to the recovery data center.
+
+The easy way out when designing such setups is, that you just use a SAN with synchronous replication for all given servers and applications and not have to care about operating system, database and application details at all. If you want to switch over, you just kill the nodes on the main site (if necessary and possible), promote the mirrors on the recovery site to become active volumes, boot the servers on the recovery site and everything is set.
+
+To get synchronous replication to work on block device level means that every write that hits the blockdevice must first be sent over to the secondary Storage, saved to a non-volatile memory (usually a battery backed write cache), the acknowledgement for the write sent back to the primary Storage which then can acknowledge the write to the operating system.
+
+In my case, the link between the two storage systems used iSCSI over a 100Mbit Fast Ethernet connection. With the connection between the firewall and switch being auto-configured to 10Mbit Half-Duplex[1]. This introduced a very interesting effect to the overall operation of the system, namely write latency.
+
+This situation, combined with the extended blockdevice statistics introduced somewhere in Linux 2.5, and the great "iostat":http://pagesperso-orange.fr/sebastien.godard/ tool rendering these statistics in an user-friendly way, opened my eyes to previously ignored and unseen facts about "storage" as I knew it. Statistics, which are available in Linux since 2.5.45 (October 2002) or 2.6.0 (December 2003) if you only count stable kernels.
+
+h2. Here and now
+
+This brings us to the now. There's a huge lack of information in the FOSS (well, at least Linux) community when it comes to block devices, storage systems and file systems when seen from a performance point of view. I always cringe when I see that someone throws a bonnie++/tar xvfz <kernel>/make kernel at a problem and provides the results as is or scarcely commented at best.
+
+I was always inclined to ask "Well, that are some nice numbers you got there. But do you actually know what they mean and why they did come out that way?", but not knowing any better than the authors, I always refrained from doing so.
+
+And I think this lack of knowledge isn't limited to the FOSS world but goes even further. Want to know about Processes, Memory, Context Switches and Interrupts? Grab a "book":http://www.amazon.com/dp/0130313580 from a guy called Tanenbaum. Getting confused by all these tubes? There's a "book":http://www.amazon.com/dp/0201633469/ on that too! But all the storage performance stuff seems to be mostly - if not entirely - isolated engineering knowledge.
+
+Knowledge that is passed on by departments in companies which are affected by them. Disk manufacturers, RAID controller vendors, SAN companies and software products which rely heavily on fast disk storage, namely databases. And the occasional kernel hackers who needs to "make shit fly".
+
+The companies who invest their own R&D budget in creating internal low-level knowledge usually don't want to share their findings to give their competitors a free benefit and the literature for database and SAN administrators is usually very targeted to a specific use case and coast over the gory details from a high-level perspective.
+
+h2. The series
+
+So, from my initial plan to benchmark filesystem metadata operations I've grown into telling the whole story, because it doesn't make any sense to dive into details if the basis is missing.
+
+I'm planning this as a series with this rough draft:
+
+* Blockdevices
+* Filesystems & Block-level Performance
+* RAID
+* Volume Managers
+* ZFS and friends (or: The death of the boundaries)
+
+
+If you can suggest literature or call yourself an expert on any of the topics, I'd be delighted to hear from you, since I need to research many details for myself to gain the confidence I'd expect from me ;).
+
+
+fn1.  I'll have to congratulate either Dell or Nokia on that one.

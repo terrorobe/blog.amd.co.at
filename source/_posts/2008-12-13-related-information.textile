@@ -1,0 +1,27 @@
+--- 
+layout: post
+title: Related information
+mt_id: 4
+date: 2008-12-13 23:59:03 +01:00
+---
+...since I wanted to avoid the term "Blogroll".
+
+A list of blogs or other periodically updated publications on various topics.
+
+h2. Friends
+
+h3. "Christian Hofstädtler":http://zeha.at/blog/
+
+Configuration Management, Virtualization, Hardware and much more
+
+h3. "Michael Prokop":http://michael-prokop.at/blog/
+
+Maintainer of "grml":http://grml.org/, focuses on Linux, FOSS and presenting ;).
+
+h2. Systems management
+
+These publications focus on one or more areas of "systems":http://www.sysadmin.com.au/sa-bok.html "management":http://en.wikipedia.org/wiki/Systems_management.
+
+h3. "High Scalability":http://highscalabilty.com/
+
+A blog which focuses on ways to achieve high scalability and looks behind the curtains of many large websites. 

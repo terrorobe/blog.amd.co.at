@@ -1,0 +1,51 @@
+--- 
+layout: post
+title: System Administrator centric online community launched
+mt_id: 17
+date: 2009-05-29 13:02:20 +02:00
+---
+To quote Jeff Atwood in his ["blog":http://www.codinghorror.com/blog/archives/001269.html]:
+
+bq.. "Server Fault":http://serverfault.com/ is a sister site to "Stack Overflow":http://stackoverflow.com/, which we launched back in September 2008. It uses the same engine, but it's not just for programmers any more:
+
+Server Fault is for system administrators and IT professionals, people who manage or maintain computers in a professional capacity. If you are in charge of ...
+* servers
+* networks
+* many desktop PCs (other than your own)
+... then you're in the right place to ask your question! Well, as long as the question is about your servers, your networks, or desktops you support, anyway. 
+p. I'm really delighted to see this. I liked what Jeff and his friends did with Stack Overflow and always thought that the System Administrators lacked a sensible and well-visited forum of some sorts.
+
+With software developers there are various boards, groups, etc. (albeit mostly language/framework-specific) where one can get sane and considerate suggestions from people who know their box and can think outside of it.
+
+But for system administrators no such generic & popular places existed (Maybe some Usenet groups and probably some areas in the wake of ["LISA":http://www.usenix.org/events/lisa09/]/["USENIX":http://www.usenix.org/], but those are as well-established in Old Europe as Monster Trucks and WWF wrestling).
+
+One of the main challenges System Administrators face is, that compared to most developers who might work in a single language/framework on a single product for weeks or months, sysadmins are depending on the environment, tasked with a very broad area of responsibilities and topics.
+
+At the bare minimum every site should have:
+
+* Backup
+* Restore (think: Disaster Recovery)
+* Monitoring
+* Performance data collection
+* Documentation
+* Virtualization (by now!)
+* Patch/Update management
+* Configuration Management (if the amount of nodes warrants it)
+* Defined & communicated availability information for the system
+
+Excluding any services which are going to be run on the infrastructure you need a good understanding of products from at least 7 different vendors to setup & maintain this infrastructure. And may god help you if you need to design your infrastructure upfront with products you don't know yet. Especially when it's open source products[1].
+
+And this is were "Server Fault":http://serverfault.com/ comes to the rescue.
+
+You're looking for a backup solution and want to check upfront if "Bacula":http://www.bacula.org/ or "Amanda":http://www.amanda.org/ are any good or if you should go for the commercial offerings? Heck, you might even want to know about different approaches to short-term backups, like ["NetApp Snapshots":http://www.netapp.com/us/products/platform-os/snapshot.html]?
+
+You're relatively new to the Virtualization bandwagon and want to know what the production-relevant impediments and features of  "Xen":http://www.xen.org/, "KVM":http://www.linux-kvm.org/, ["OpenVZ":http://www.openvz.org]/["Virtuozzo":http://www.parallels.com/products/virtuozzo/] and "VMware":http://www.vmware.com/ are?
+
+Those are a few examples one can learn through many years in System Administration, in the right environment with the right sort of colleagues.
+
+And this process can be shortened considerably when you've got the right sort of forum, were interested persons can mingle with experienced ones and were even controversial topics (Container-based or Full Virtualization? I dare you!) can be discussed in a civilized manner.
+
+So let's see how this develops, I'll be trolling the site in the meanwhile ;).
+
+
+fn1. As the infrastructure/installation gets larger, proper integration of all tools becomes more and more important. You don't want to find out that your tool doesn't have proper AAA integration for central identity management. You don't want to hack up your own monitoring interfaces, going directly into the products native database because the vendor didn't really anticipate that you want automatic monitoring of your job runs. Those are expected features when a given tool handles more nodes than you can count with all your limbs.

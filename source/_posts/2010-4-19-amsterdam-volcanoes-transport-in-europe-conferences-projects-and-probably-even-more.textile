@@ -1,0 +1,51 @@
+--- 
+layout: post
+title: Amsterdam, Volcanoes, Transport in Europe, Conferences, Projects and probably even more
+mt_id: 23
+date: 2010-04-19 00:06:54 +02:00
+---
+So it's April by now, more than half a year since my last post. Maybe this blogging business was just a temporary thing after all. I guess my reluctance to post anything new was caused by the lack of definitives in my life as of lately, but this is hopefully changing in the near future. 
+At the moment I'm sitting in Amsterdam, being grounded since Saturday evening by the Icelandic volcano business (which is 80% FUD and 20% facts by my guess), juggling the options of flying home to Vienna tomorrow (if they decide to open shop again and I can actually get a ticket) or just staying here till Thursday for my second round of PowerDNS trainings. I already ruled out going by car (one-way Amsterdam -> Vienna is far too expensive for my tastings, and I won't be doing ~22 hours of driving in 4 days).
+
+Going by train across Europe is still a complete no-go for the spoiled Web-generation I'd call myself a member of, both "oebb.at":http://www.oebb.at/ "ns.nl":http://www.ns.nl/ don't list fares and seat availability; "nshispeed.nl":http://www.nshispeed.nl/ doesn't even know Austria! "Deutschebahn.com":http://www.deutschebahn.com/ at least had pricing and seat (un)availability information for the trains from Frankfurt to Vienna, this information combined with first hands experience by a friend of mine ("The terror! The terror I've seen!") suggested that train was not the way to go.
+
+So right now I'm wearing a lent Slipknot t-shirt, waiting for my laundry to finish and cancelling the appointments for the coming week.
+
+
+h1. Definitives, possibilities and maybes
+
+I quit my job at Geizhals back in November because of cultural differences too large to bridge. Looking at my professional experience so far and the Austrian (especially Viennese) job market my best guess was starting to freelance. The support of the "AMS":http://www.ams.or.at/ in this regard and the aids for formation of a company in Austria by the "Wirtschaftskammer":http://www.wirtschaftskammer.at/ made this step much easier than I had anticipated.
+
+In the meanwhile I also got a few job offers which I'm looking into, the most notable being by the big G. I'll be over in Zurich at the beginning of May, so stay tuned for further updates.
+
+There's also stuff happening in the Viennese Web20 area, the "PowerDNS":http://www.powerdns.com/ front and I'm also pondering about startup ideas as of lately with "Lukas Fittl":http://fittl.com/. 
+
+Oh well, I hope I've got a sound plan by no later than the end of the year ;).
+
+h1. Conferences
+
+Conferences! There's a confirmed "presence of me":http://amoocon.de/speakers/214 at the "AMOOCON":http://www.amoocon.de/ and a pretty unconfirmed one at the "Netways OSDC":http://www.netways.de/osdc/osdc_2010/program/. All talks are about PostgreSQL, see the conference pages for exact focus.
+ 
+
+h1. Sideprojects
+
+On the sideproject front I can welcome
+
+h2. Titanpad
+
+"Titanpad":http://titanpad.com/ was launched as "EtherPad":http://etherpad.com/ replacement, because the latter one prevented new pad creation from the 14th April on and will close shop at 14th of May.
+
+h2. etherhack
+
+"etherhack":http://etherhack.wordpress.com/ is a project of a friend of mine who wants to bring Linux on generic (somewhat-)managed switches. The research is currently at the beginning, if you're into hardware hacking, writing toolchains and all that stuff it's definitely something to look into.
+
+h2. FM4
+
+The ever-present unofficial FM4 stream is currently on "hiatus":http://fm4.amd.co.at/. We'll see if we can find a new home for it.
+
+h2. PostgreSQL Benchfarm
+
+I "dabbled a bit":https://workbench.amd.co.at/hg/pgperftrace/ into object oriented Perl with "Moose":http://www.iinteractive.com/moose/, trying to build an automated and customizable benchmarking framework for PostgreSQL. It was quite a trip but I currently put my project on hold because I'm all out of time and focus ;).
+
+
+That's all from me for now, I'm off to bed and hunting flights tomorrow.

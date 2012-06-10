@@ -1,0 +1,78 @@
+--- 
+layout: post
+title: An interim update
+mt_id: 20
+date: 2009-08-16 21:13:18 +02:00
+---
+The last two months were very interesting and positively demanding. 
+h2. Geizhals
+
+I took up a regular (and interesting!) job again at "Geizhals":http://geizhals.at/ (a price comparison platform with origins in Austria), which seems to be one of the few interesting web projects in Austria. The job title says "Head of IT services", at the moment I'm interviewing candidates for the newly created sysadmin team as well as testing components[1] for a future-proof platform to run all Geizhals services. The project has come a long way in the few years I didn't follow it closely and the service landscape got quite a bit more complex in the meanwhile.
+
+fn1. Currently at the foundation: HP, Supermicro, Debian, Xen, DRBD, one of the projects formerly known as Heartbeat, Pupppet, etc.
+
+
+h2. Nehalem & HP ProLiant G6
+
+With the official presentation of the Nehalem architecture HP also launched their ProLiant Generation 6. The "QuickPath interconnect":http://en.wikipedia.org/wiki/Intel_QuickPath_Interconnect was long overdue and is a stab in the heart of AMDs meticulously built up foothold in the server market. It'll be interesting to see how the vendors who switched to AMD in the last few years[2] will plan their future strategy. 
+
+
+As for HP servers - we've currently got two DL360 G6, E5530, 72GB RAM, 8x 300GB SAS machines in the office.
+
+Things were a bit bumpy at the start (quite a few "must-have" firmware updates), but this is to be expected when a new CPU architecture and chipset is launched, I'll probably follow up as soon as the servers are in production.
+
+A few things I noticed when comparing DL360 G6 to G5:
+
+The servers:
+
+* are more quiet
+* use less power
+* take ages to POST
+* are flaky in heavy reboot/test cycles, especially when using virtual media and broken boot loaders
+* are otherwise what you'd expect from properly engineered TIer 1 servers
+
+fn2. The main reason being Opteron/HyperTransport, because Intel's FSB-architecture didn't scale nicely to more than a few processors
+
+h2. HP & Debian
+
+On the plus side the Debian support for the server tools is much better these days. The effort (apparently spearheaded by ["Dann Frazier":http://dannf.org/bloggf/]) resulted in a apt-cdrom readable "ISO image":http://h20000.www2.hp.com/bizsupport/TechSupport/SoftwareIndex.jsp?lang=en&cc=us&prodNameId=3562405&prodTypeId=15351&prodSeriesId=3454575&swLang=8&taskId=135&swEnvOID=4032 which is going to be replaced by a proper Debian repository[3] eventually.
+
+If you run ProLiant x86 servers the hp-health tools are very nice to have and if you're using SmartArray controllers you'll be delighted by the properly packaged hpacucli. 
+
+
+fn3. I've set up "http://amd.co.at/hpstuff/":http://amd.co.at/hpstuff/ in the meanwhile. Use "deb http://amd.co.at/hpstuff lenny/8.25 non-free" as sources.list entry in your Debian Lenny systems.
+
+h2. Debian & Bootloaders
+
+During the testing & deployment of the new HP servers I stumbled over a few gotchas in Debian Lenny.
+
+Installing a LVM-root based system with no standalone /boot partition is apparently unsupported (results in an unbootable system), if you go with Debian's defaults for LVM-root installations you get a system with LILO.
+
+Nothing a manual copying of the /boot files and installing of GRUB 2 can't fix.
+
+But as soon as you try using GRUB 2 on a Xen Dom0 you notice that the grub.cfg generator doesn't support generating Xen compatible config stanzas.
+
+I'll file a few bug/discussion reports in the near future as soon as I've got all the details worked out.
+
+h2. PostgreSQL 8.4
+
+In the meanwhile PostgreSQL 8.4 was also released. No major breakthroughs, but lots of small functionality and performance improvements. See the "announcement":http://www.postgresql.org/about/news.1108 and the "Release notes":http://www.postgresql.org/docs/8.4/static/release-8-4.html for details.
+
+The thing I'm interested in the most is the introduction of "fadvise calls":http://www.postgresql.org/docs/8.4/interactive/runtime-config-resource.html#RUNTIME-CONFIG-RESOURCE-ASYNC-BEHAVIOR which make asynchronous kernel-side multithreaded IO-prefetching possible. This is very helpful in situations where index scans of a single backend hit disk and your storage backend can handle more (read) IOs than a single thread can generate on it's own. Expect more on this topic in the near future.
+
+
+
+h2. Performance
+
+At work I had the chance to replace a 8 drive SATA SAN with a 32 drive SAS SAN along with a server replacement (Intel Core2/FSB Xeons -> HyperTransport Opterons). Benchmarking these things was quite fun and enlightening, but I had far too few time to properly document everything. One thing that I learned is, that ample amounts of write cache and proper Command Queuing depth come a long way in storage systems ;). Still no solid state devices though.
+
+
+h2. PostgreSQL talk
+
+I'll give a talk on "PostgreSQL Performance":http://programm.froscon.org/2009/events/432.en.html at ["FrOSCon":http://www.froscon.org/]. Still not finished, but it's targeted at beginners (when it comes to performance-related topics) and not entirely PostgreSQL specific. I'll probably repeat it at the ["Metalab":http://metalab.at/], if there should be enough interest.
+
+
+
+h2. SICEKIT
+
+Christian Hofstädtler and I started to generalize the infrastructure documentation framework we started back at ["Inqnet":http://www.inqnet.at/]. The current progress can be seen at ["http://sicekit.org/":http://sicekit.org/], it will probably take a few months till we've got an usable product though.

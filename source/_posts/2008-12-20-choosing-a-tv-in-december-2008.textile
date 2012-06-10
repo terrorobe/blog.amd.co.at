@@ -1,0 +1,94 @@
+--- 
+layout: post
+title: Choosing a TV in December 2008
+mt_id: 5
+date: 2008-12-20 19:42:13 +01:00
+---
+h1. I need a new TV!
+
+Since I've been stuck with a 27" CRT TV for the last few years (which always felt far too small for my ~3.5-4 m couch distance) and have been hit by the HDTV-reliance of modern console games ("you call the blob in the lower left corner a 'HUD'?") I longed for a proper "display unit" for quite some time.
+
+After getting overtime/vacation payoffs from my last job in November and an unexpected bonus in December, all rational thoughts have been finally thrown over board - let's burn some money! 
+
+h2. Preface
+
+You won't find any highly technical or esoteric discussions about colour rendition here, because I mostly don't care, I just wanted to make an educated decision about the products which are available on the market. Nowadays the midrange models mostly get stuff right or can be tuned to a satisfying level.
+
+Be sure to read up on the terms and nuances on the "free Encyclopedia":http://en.wikipedia.org/, since it's a very interesting topic. Start with "TFT LCDs":http://en.wikipedia.org/wiki/Thin_film_transistor_liquid_crystal_display and "Plasma Displays":http://en.wikipedia.org/wiki/Plasma_display.
+
+Also be wary of reviews you read, the reviewers only highlight stuff they know, care about and are paid for. Be sure to cross-check with a few sites or offline publications before spending a noticeable chunk of your household budget.
+
+h2. About light and darkness
+
+One of the long-standing discussions in TV country is the eternal struggle between LCD and Plasma Panel technologies.
+
+The predominant discussion point is the contrast (or simplified: "different values of colour") a given display can show, which is pretty much defined by the source of light which is being used.
+
+With Plasma, every single Pixel emits light when it's "activated" and stops emitting light when there's no more power applied to the pixel.
+
+LCDs on the other hand have a single light source for the whole display, illuminating the Liquid Crystal Matrix. There are a few problems with this:
+
+Since the backlight is always turned on and shining evenly, there's only so much "dark" you can reach with an illuminated black pixels, resulting in a reduced overall contrast.
+
+Another issue when using a single light source is that it's not very easy to get uniform lighting across the display, especially when they get larger. This can result in "blotches" or "clouds" of light when showing a dark or blank screen.
+
+But in the midst of 2008, Samsung debuted it's first LED-backlit TV. What Samsung did is replacing the single "CCFL":http://en.wikipedia.org/wiki/Cold_cathode with a matrix of LEDs which can be individually turned off and on, resulting in a much higher contrast, a "black level" of 0cd/m² with a completely dark scene and a much more uniform light distribution.
+
+Link: "Pictures of CCFL backlight clouding":http://whathifi.com/forums/1/144898/ShowThread.aspx
+
+h2. Other plasma subtleties
+
+Plasma displays are prone to an effect called "Phosphor trails":http://www.hdtvtest.co.uk/news/plasma-phosphor-trail-2007040133.htm, which are caused by the three different plasma colours having different ramp-up and after-glow times when receiving energy. This is probably not of concern for movies and television, but might be an issue when using the display primarily for gaming or other visualization tasks.
+
+
+h2. Latency? In my TV?
+
+With all the HD-fuss, the intermediate steps to 1080p/24p and the need to make "Standard Definition" content bearable to watch at the new-gained resolutions, the amount of image-processing which is done in modern TVs is legion.
+
+While the processing mostly (but not always) improves image quality, it also adds latency between the TV receiving the frame and when it's finally shown on the display. Latencies of 50ms[1] might not even be noticeable while watching a movie, but they can be highly irritating when playing games which require fast reaction times like First Person Shooters.
+
+So when choosing a TV which is going to be used extensively for gaming, one should always check if a particular model is prone to high latencies.
+
+
+h2. Plasma or LCD?
+
+As for me personally, the phosphor trails, the overall higher power consumption and the potential for higher background noises (fans, plasma humming) made me search for a LCD-based TV.
+
+The main advantage of Plasma-based displays, the higher contrast ratio, is going to be outrun by LED-backlit LCDs pretty soon, so it seems that the whole technology is bound for extinction.
+
+h2. Size matters
+
+I always felt that my 27" display was far too small for the ~3,6m viewing distance I've got in my living room. I wanted to get a 46" model, but my furniture only allows for about 42". 
+
+CNET has suggestions in "imperial":http://reviews.cnet.com/4520-7608_7-1016109-2.html and "proper":http://www.cnet.de/praxis/ratgeber/39139495/update+hdtv_kaufberatung.htm measurement units for picking the right TV size for your room.
+
+h2. Lines, frames, connectors and the like.
+
+If you're not strapped for cash there's no need to save on features these days. Make sure that you get a "Full HD/1080p":http://en.wikipedia.org/wiki/1080p, "24p":http://en.wikipedia.org/wiki/24p TV with at least three "HDMI 1.3":http://en.wikipedia.org/wiki/HDMI#Versions connectors and a "component video":http://en.wikipedia.org/wiki/Component_video input. If you follow these suggestions you can be sure that your TV will be "future proof" (at least from today's point of view ;) ).
+
+h2. And the contenders are...
+
+I narrowed my choices down[2] to the following models:
+
+* "Sony KDL-40W4500":http://www.sony.co.uk/product/t32-w-series/kdl-40w4500
+* "Sony KDL-40Z4500":http://www.sony.co.uk/product/t32-z-series/kdl-40z4500
+* "Samsung LE-40A786":http://www.samsung.com/at/consumer/detail/detail.do?group=television&type=television&subtype=lcdtv&model_cd=LE40A756R1FXXC (German only, Samsung has a great sense of Product Management)
+
+and dumped the KDL-40W4500 because of reports of a very "uneven backlight":http://www.trustedreviews.com/tvs/review/2008/10/28/Sony-Bravia-KDL-46W4500-46in-LCD-TV/p1 and the LE-40A786 because it has an unbelievably high "input lag":http://www.hdtvtest.co.uk/news/samsung-le40a786-review-20080922131.htm of up to 70ms, which rules it out for "serious" gaming.
+
+The latter hurt very bad, since it's one of the few affordable LED-backlit LCD TVs. Samsung also has a more expensive LE-46A956 which I could squeeze into my TV cupboard, but it suffers from the same lag issues like it's smaller cousin.
+
+I'll probably follow up as soon as I've got the TV...
+
+h2. Links
+
+The following websites helped me when hunting for information:
+
+* "hdtvtest.co.uk":http://www.hdtvtest.co.uk/ - One of the few sites mentioning input lag
+* "trustedreviews.com":http://www.trustedreviews.com/tvs/ - Large review site sporting many reviews. Less technical, though.
+* "geizhals.at":http://geizhals.at/eu/?cat=tvlcd;xf=126_FullHD~126_24p~190_3&sort=eintr - Price comparison site focused on Germany and Austria.
+* "google.com":http://google.com/ - As always, just search for "review <modelname>" and you're set ;).
+
+fn1. Just for comparison - Modern ADSL and cable internet connections  have latencies in the area of 30-40ms.
+
+fn2. Using advanced heuristics of "merchant penetration":http://geizhals.at/?cat=tvlcd;bpmax=2000;v=e;xf=128_150~190_3~33_40/102~126_FullHD~126_24p~130_80&sort=eintr and review availability.

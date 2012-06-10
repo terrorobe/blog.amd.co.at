@@ -1,0 +1,9 @@
+--- 
+layout: post
+title: PostgreSQL Performance Slides, Solaris stuff
+mt_id: 22
+date: 2009-09-23 20:10:00 +02:00
+---
+As promised, "here are the slides":http://amd.co.at/blogdata/postgresql_performance_web.pdf of my presentation I held at the Metalab, titled "PostgreSQL Performance: Eine Landvermessung".
+
+And I just stumbled over this "blog posting":http://blogs.sun.com/brendan/entry/7410_hardware_update_and_analyzing by "Brendan Gregg":http://www.blogcdn.com/www.engadget.com/media/2009/01/shout-at-disk-array-eng.jpg who works for Sun's "Fishworks team":http://blogs.sun.com/bmc/entry/fishworks_now_it_can_be and was amazed by the level of detail that Solaris' instrumentation data provides. Good stuff! 
